@@ -17,6 +17,9 @@ import { Public } from '../security/public.decorator';
 import { Roles } from '../security/roles.decorator';
 import { Role } from '../user/user.entity';
 import { RolesGuard } from '../security/roles.guard';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { Req } from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
@@ -44,5 +47,12 @@ export class AuthController {
   @UseGuards(RolesGuard)
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
+  }
+
+  @Post('change-password')
+  @UseGuards(AuthGuard('jwt'))
+  async changePassword(@Req() req: any, @Body() dto: ChangePasswordDto) {
+    const userId = req.user?.userId;
+    return this.authService.changePassword(userId, dto);
   }
 }
